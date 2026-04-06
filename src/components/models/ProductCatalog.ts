@@ -1,8 +1,8 @@
 import { IProduct } from "../../types";
 
 export class ProductCatalog {
-  products: IProduct[] = [];
-  selectedProduct: IProduct | null = null;
+  private products: IProduct[] = [];
+  private selectedProduct: IProduct | null = null;
 
   setProducts(products: IProduct[]): void {
     this.products = products;
@@ -17,8 +17,11 @@ export class ProductCatalog {
     return found || null;
   }
 
-  setSelectedProduct(product: IProduct): void {
-    this.selectedProduct = product;
+  setSelectedProduct(id: string): void {
+    const product = this.products.find(product => product.id === id);
+    if (product) {
+      this.selectedProduct = product;
+    }
   }
 
   getSelectedProduct(): IProduct | null {

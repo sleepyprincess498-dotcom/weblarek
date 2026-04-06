@@ -5,77 +5,77 @@ const log = console.log;
 import { ProductCatalog } from "./components/models/ProductCatalog";
 import { Buyer } from "./components/models/Buyer";
 import { Cart } from "./components/models/Cart";
-import { IBuyer, IProduct, TBuyerErrors, TPayment } from "./types";
-import { IApi, ApiPostMethods, ProductListSuccess, OrderSuccess, OrderBody } from "./types";
-import { AppApi } from "./components/models/Api";
+import { AppApi } from "./components/models/AppApi";
 import { Api } from "./components/base/Api";
 
+import {API_URL} from "./utils/constants"
 
 
-// === Тестовые данные ===
-const testProduct1: IProduct = {
-  id: '1',
-  title: 'Кружка',
-  description: 'Красивая кружка',
-  image: '/images/mug.png',
-  category: 'другое',
-  price: 500
-};
+// === Тест AppApi (запрос к серверу) ===
+//=== Получение данных для теста классов и интерфейсов ===
+log('=== AppApi ===');
 
-const testProduct2: IProduct = {
-  id: '2',
-  title: 'Футболка',
-  description: 'Крутая футболка',
-  image: '/images/tshirt.png',
-  category: 'софт-скил',
-  price: 1200
-};
-
-const testProduct3: IProduct = {
-  id: '3',
-  title: 'Бесценный товар',
-  description: 'Его нельзя купить',
-  image: '/images/priceless.png',
-  category: 'другое',
-  price: null
-};
-
-
-// === Тест ProductCatalog ===
-console.log('=== ProductCatalog ===');
-
+const BaseApi = new Api(API_URL);
+const appApi = new AppApi(BaseApi);
 const catalog = new ProductCatalog();
 
-catalog.setProducts([testProduct1, testProduct2, testProduct3]);
+appApi.getProducts()
+  .then(data => {
+    const products = data.items;
+    log('Полученные товары с сервера:', products);
 
-log('Все товары:', catalog.getProducts());
-log('Товар по id "2":', catalog.getProductById('2'));
-log('Товар по id "999":', catalog.getProductById('999'));
+    // === Тест ProductCatalog ===
+    console.log('=== ProductCatalog ===');
 
-catalog.setSelectedProduct(testProduct1);
-log('Выбранный товар:', catalog.getSelectedProduct());
+    catalog.setProducts(products);
+
+    log('Все товары:', catalog.getProducts());
+    log('Товар по id "c101ab44-ed99-4a54-990d-47aa2bb4e7d9":', catalog.getProductById("c101ab44-ed99-4a54-990d-47aa2bb4e7d9"));
+    log('Товар по id "999":', catalog.getProductById('999'));
+
+    catalog.setSelectedProduct("c101ab44-ed99-4a54-990d-47aa2bb4e7d9");
+    log('Выбранный товар:', catalog.getSelectedProduct());
 
 
+    // === Тест Cart ===
+    log('=== Cart ===');
 
-// === Тест Cart ===
-log('=== Cart ===');
+    const cart = new Cart();
+    const plusHour = catalog.getProductById("854cef69-976d-4c2a-a18c-2aa45046c390");
+    const button = catalog.getProductById("1c521d84-c48d-48fa-8cfb-9d911fa515fd")
+    const ball = catalog.getProductById("90973ae5-285c-4b6f-a6d0-65d1d760b102")
+    
 
-const cart = new Cart();
+    if (button) {
+      cart.addItems(button);
+    }
+    if (ball) {
+      cart.addItems(ball);
+    }
 
-cart.addItems(testProduct1);
-cart.addItems(testProduct2);
+    log('Товары в корзине:', cart.getItems());
+    log('Количество:', cart.getItemCount());
+    log('Общая сумма:', cart.getTotalPrice());
 
-log('Товары в корзине:', cart.getItems());
-log('Количество:', cart.getItemCount());
-log('Общая сумма:', cart.getTotalPrice());
-log('Есть товар "1"?', cart.hasItem('1'));
-log('Есть товар "999"?', cart.hasItem('999'));
 
-cart.removeItem('1');
-log('После удаления товара "1":', cart.getItems());
+    if (plusHour) {
+      log('Есть товар plusHour?', cart.hasItem(plusHour.id));
+    }
+    if (button) {
+      log('Есть товар button?', cart.hasItem(button.id));
+    }
 
-cart.clearCart();
-log('После очистки корзины:', cart.getItems());
+    if (button) {
+      cart.removeItem(button.id);
+      log('После удаления товара button:', cart.getItems());
+    }
+
+    cart.clearCart();
+    log('После очистки корзины:', cart.getItems());
+  })
+  .catch(error => {
+    log(error)
+  })
 
 
 // === Тест Buyer ===
@@ -84,7 +84,6 @@ log('=== Buyer ===');
 const buyer = new Buyer();
 
 log('Валидация пустого покупателя:', buyer.validate());
-log('Валиден?', buyer.isValid());
 
 buyer.setPayment('card');
 buyer.setEmail('test@mail.ru');
@@ -93,19 +92,5 @@ buyer.setAddress('Москва, ул. Пушкина, д. 1');
 
 log('Данные покупателя:', buyer.getBuyerData());
 log('Валидация заполненного:', buyer.validate());
-log('Валиден?', buyer.isValid());
-log('После очистки:', buyer.clearBuyerData());
-
-
-// === Тест AppApi (запрос к серверу) ===
-log('=== AppApi ===');
-
-const BaseApi = new Api('https://larek-api.nomoreparties.co/api/weblarek');
-const appApi = new AppApi(BaseApi);
-const catalog2 = new ProductCatalog();
-
-appApi.getProducts()
-  .then(data => {
-    catalog2.products = data.items
-    log(catalog2.products)
-  })
+buyer.clearBuyerData()
+log('После очистки:', buyer.getBuyerData());

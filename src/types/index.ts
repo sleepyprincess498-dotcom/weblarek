@@ -36,11 +36,7 @@ export interface OrderSuccess {
     total: number
 }
 
-export interface OrderBody {
-    "payment": string,
-    "email": string,
-    "phone": string,
-    "address": string,
-    "total": number,
-    "items": string[]
-}
+export interface OrderBody extends IBuyer{
+    total: number; 
+    items: string[]; 
+} 

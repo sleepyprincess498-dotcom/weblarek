@@ -1,64 +1,57 @@
 import {IBuyer, TPayment, TBuyerErrors} from '../../types/index';
 
 export class Buyer {
-  private _payment: TPayment | null = null;
-  private _email: string | '' = '';
-  private _phone: string | '' = '';
-  private _address: string | '' = '';
+  private payment: TPayment | null = null;
+  private email: string = '';
+  private phone: string = '';
+  private address: string = '';
 
   setPayment(payment: TPayment): void {
-    this._payment = payment;
+    this.payment = payment;
   }
 
   setEmail(email: string): void {
-    this._email = email;
+    this.email = email;
   }
   
   setPhone(phone: string): void {
-    this._phone = phone;
+    this.phone = phone;
   }
 
   setAddress(address: string): void {
-    this._address = address;
+    this.address = address;
   }
 
-  getBuyerData(): IBuyer | null {
-    if (!this._payment) return null
+  getBuyerData(): IBuyer {
     return {
-      payment: this._payment,
-      email: this._email,
-      phone: this._phone,
-      address: this._address
+      payment: this.payment,
+      email: this.email,
+      phone: this.phone,
+      address: this.address
     }
   }
 
-  clearBuyerData(): IBuyer | null {
-    return {
-      payment: null,
-      email: '',
-      phone: '',
-      address: ''
-    }
+  clearBuyerData(): void {
+    this.payment = null;
+    this.email = '';
+    this.phone = '';
+    this.address = '';
   }
 
   validate(): TBuyerErrors {
     const errors: TBuyerErrors = {};
-    if (!this._payment) {
+    if (!this.payment) {
       errors.payment = 'Выберите способ оплаты';
     }
-    if (!this._email) {
+    if (!this.email) {
       errors.email = 'Введите email';
     }
-    if (!this._phone) {
+    if (!this.phone) {
       errors.phone = 'Введите телефон';
     }
-    if (!this._address) {
+    if (!this.address) {
       errors.address = 'Введите адрес';
     }
     return errors;
-  }
-
-  isValid(): boolean {
-    return !!(this._email && this._payment && this._phone && this._address);
   }
 }
