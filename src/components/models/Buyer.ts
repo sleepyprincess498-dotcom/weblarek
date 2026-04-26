@@ -3,46 +3,67 @@ import { IEvents } from '../base/Events';
 
 export class Buyer {
   private payment: TPayment | null = null;
+  private address: string = '';
   private email: string = '';
   private phone: string = '';
-  private address: string = '';
-
   private events: IEvents;
-
   constructor(events: IEvents) {
     this.events = events;
   }
-
-  setPayment(payment: TPayment): void {
-    this.payment = payment;
+  setPayment(value: TPayment): void {
+    this.payment = value;
+    this.events.emit('buyer:changed');
   }
-
-  setEmail(email: string): void {
-    this.email = email;
+  setAddress(value: string): void {
+    this.address = value;
+    this.events.emit('buyer:changed');
   }
-  
-  setPhone(phone: string): void {
-    this.phone = phone;
+  setEmail(value: string): void {
+    this.email = value;
+    this.events.emit('buyer:changed');
   }
-
-  setAddress(address: string): void {
-    this.address = address;
+  setPhone(value: string): void {
+    this.phone = value;
+    this.events.emit('buyer:changed');
   }
-
-  getBuyerData(): IBuyer {
-    return {
-      payment: this.payment,
-      email: this.email,
-      phone: this.phone,
-      address: this.address
-    }
+  getPayment(): TPayment | null {
+    return this.payment;
   }
-
-  clearBuyerData(): void {
+  getAddress(): string {
+    return this.address;
+  }
+  getEmail(): string {
+    return this.email;
+  }
+  getPhone(): string {
+    return this.phone;
+  }
+  clear(): void {
     this.payment = null;
+    this.address = '';
     this.email = '';
     this.phone = '';
-    this.address = '';
+    this.events.emit('buyer:changed');
+  }
+  validateOrder(): string[] {
+    const errors: string[] = [];
+    if (!this.payment) {
+      errors.push('Выберите способ оплаты');
+    }
+    if (!this.address) {
+      errors.push('Укажите адрес доставки');
+    }
+    return errors;
+  }
+  validateContacts(): string[] {
+    const errors: string[] = [];
+    if (!this.email) {
+      errors.push('Укажите email');
+    }
+    if (!this.phone) {
+      errors.push('Укажите телефон');
+    }
+    return errors;
   }
 
   validate(): TBuyerErrors {
@@ -61,4 +82,22 @@ export class Buyer {
     }
     return errors;
   }
+
+  getBuyerData(): { payment: TPayment | null; address: string; email: string; phone: string } {
+    return {
+      payment: this.payment,
+      address: this.address,
+      email: this.email,
+      phone: this.phone,
+    };
+  }
+
+  clearBuyerData(): void {
+    this.payment = null;
+    this.address = '';
+    this.email = '';
+    this.phone = '';
+    this.events.emit('buyer:changed');
+  }
+
 }

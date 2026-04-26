@@ -11,18 +11,21 @@ export class CatalogCard extends CardView {
     this.element.addEventListener('click', onClick);
   }
   set category(value: string) {
-    this.categoryElement.textContent = value;
-    // Удаляем старые модификаторы категории
-    const classes = this.categoryElement.className.split(' ').filter(c => !c.startsWith('card__category_'));
-    this.categoryElement.className = classes.join(' ');
-    // Добавляем новый модификатор
-    const modifier = categoryMap[value];
-    if (modifier) {
-      this.categoryElement.classList.add(`card__category_${modifier}`);
-    }
+  this.categoryElement.textContent = value;
+  
+  // Удаляем старые модификаторы
+  this.categoryElement.className = 'card__category';
+  
+  // Добавляем новый модификатор
+  const modifier = categoryMap[value];
+  if (modifier) {
+    this.categoryElement.classList.add(`card__category_${modifier}`);
   }
+}
+
   set image(value: string) {
     this.imageElement.src = value;
     this.imageElement.alt = this.titleElement.textContent || '';
   }
+
 }

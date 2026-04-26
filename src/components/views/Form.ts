@@ -17,9 +17,6 @@ export class Form {
   set errors(value: string) {
     this.errorsElement.textContent = value;
   }
-  clear(): void {
-    this.element.reset();
-  }
   render(): HTMLFormElement {
     return this.element;
   }
