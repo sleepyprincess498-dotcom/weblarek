@@ -1,10 +1,17 @@
 import {IBuyer, TPayment, TBuyerErrors} from '../../types/index';
+import { IEvents } from '../base/Events';
 
 export class Buyer {
   private payment: TPayment | null = null;
   private email: string = '';
   private phone: string = '';
   private address: string = '';
+
+  private events: IEvents;
+
+  constructor(events: IEvents) {
+    this.events = events;
+  }
 
   setPayment(payment: TPayment): void {
     this.payment = payment;

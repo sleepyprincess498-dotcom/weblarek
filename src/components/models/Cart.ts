@@ -1,22 +1,31 @@
 import {IProduct} from '../../types/index';
+import { IEvents } from '../base/Events';
 
 export class Cart {
   private items: IProduct[] = [];
+  private events: IEvents;
 
-  getItems(): IProduct[] {
-    return this.items;
+  constructor(events: IEvents) {
+    this.events = events;
   }
 
-  addItems(item: IProduct): void {
-    this.items.push(item)
+  addItem(product: IProduct): void {
+    this.items.push(product);
+    this.events.emit('cart:changed');
   }
 
   removeItem(id: string): void {
     this.items = this.items.filter(item => item.id !== id);
+    this.events.emit('cart:changed');
   }
 
   clearCart(): void {
-    this.items = []
+    this.items = [];
+    this.events.emit('cart:changed');
+  }
+
+  getItems(): IProduct[] {
+    return this.items;
   }
 
   getTotalPrice(): number {
@@ -35,4 +44,9 @@ export class Cart {
   hasItem(id: string): boolean {
     return !!(this.items.find(item => item.id === id))
   }
+
+  getItemIds(): string[] {
+    return this.items.map(item => item.id);
+  }
+
 }
