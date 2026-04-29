@@ -45,26 +45,6 @@ export class Buyer {
     this.phone = '';
     this.events.emit('buyer:changed');
   }
-  validateOrder(): string[] {
-    const errors: string[] = [];
-    if (!this.payment) {
-      errors.push('Выберите способ оплаты');
-    }
-    if (!this.address) {
-      errors.push('Укажите адрес доставки');
-    }
-    return errors;
-  }
-  validateContacts(): string[] {
-    const errors: string[] = [];
-    if (!this.email) {
-      errors.push('Укажите email');
-    }
-    if (!this.phone) {
-      errors.push('Укажите телефон');
-    }
-    return errors;
-  }
 
   validate(): TBuyerErrors {
     const errors: TBuyerErrors = {};
@@ -83,7 +63,7 @@ export class Buyer {
     return errors;
   }
 
-  getBuyerData(): { payment: TPayment | null; address: string; email: string; phone: string } {
+  getBuyerData(): IBuyer {
     return {
       payment: this.payment,
       address: this.address,

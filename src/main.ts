@@ -196,10 +196,19 @@ events.on('card:remove', (product: IProduct) => {
 // --- События форм ---
 // Начало оформления заказа
 events.on('order:start', () => {
-  orderForm.clear();
-  orderForm.valid = false;
-  orderForm.errors = '';
+  buyer.clearBuyerData();  // Модель очищается и генерирует buyer:changed
   modal.content = orderForm.render();
+});
+// Модель изменилась — обновляем формы через сеттеры
+events.on('buyer:changed', () => {
+  const buyerData = buyer.getBuyerData();
+  
+  // Формы отобразят пустые значения из модели
+  orderForm.address = buyerData.address;        // ''
+  orderForm.payment = buyerData.payment;        // null
+  
+  contactsForm.email = buyerData.email;         // ''
+  contactsForm.phone = buyerData.phone;
 });
 // Валидация формы заказа
 events.on("order:validate", () => {
@@ -222,9 +231,6 @@ events.on("order:validate", () => {
 });
 // Переход к форме контактов
 events.on('order:submit', () => {
-  contactsForm.clear();
-  contactsForm.valid = false;
-  contactsForm.errors = '';
   modal.content = contactsForm.render();
 });
 
@@ -250,8 +256,18 @@ events.on('buyer:changed', () => {
   const buyerData = buyer.getBuyerData();
   
   // Получаем ошибки
-  const orderErrors = buyer.validateOrder();
-  const contactsErrors = buyer.validateContacts();
+  const errors = buyer.validate();
+
+  // Ошибки для формы заказа (payment, address)
+  const orderErrors: string[] = [];
+  if (errors.payment) orderErrors.push(errors.payment);
+  if (errors.address) orderErrors.push(errors.address);
+
+  
+  // Ошибки для формы контактов (email, phone)
+  const contactsErrors: string[] = [];
+  if (errors.email) contactsErrors.push(errors.email);
+  if (errors.phone) contactsErrors.push(errors.phone);
   
   // Обновляем форму заказа
   orderForm.address = buyerData.address;
@@ -268,9 +284,6 @@ events.on('buyer:changed', () => {
 
 // Отправка заказа
 events.on('contacts:submit', () => {
-  if (!!buyer.validate()) {
-    return;
-  }
   const orderData = {
     ...buyer.getBuyerData(),
     total: cart.getTotalPrice(),

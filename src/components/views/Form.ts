@@ -1,13 +1,14 @@
 export class Form {
   protected element: HTMLFormElement;
   protected submitButton: HTMLButtonElement;
-  protected errorsElement: HTMLSpanElement;
+  protected errorsElement: HTMLElement;
   constructor(template: HTMLTemplateElement, onSubmit: () => void) {
     this.element = template.content.firstElementChild!.cloneNode(true) as HTMLFormElement;
+    
     this.submitButton = this.element.querySelector('button[type="submit"]') as HTMLButtonElement;
-    this.errorsElement = this.element.querySelector('.form__errors') as HTMLSpanElement;
-    this.element.addEventListener('submit', (event) => {
-      event.preventDefault();
+    this.errorsElement = this.element.querySelector('.form__errors') as HTMLElement;
+    this.element.addEventListener('submit', (e) => {
+      e.preventDefault();
       onSubmit();
     });
   }
@@ -17,7 +18,7 @@ export class Form {
   set errors(value: string) {
     this.errorsElement.textContent = value;
   }
-  render(): HTMLFormElement {
+  render(): HTMLElement {
     return this.element;
   }
 }
