@@ -26,25 +26,7 @@ export class Buyer {
     this.phone = value;
     this.events.emit('buyer:changed');
   }
-  getPayment(): TPayment | null {
-    return this.payment;
-  }
-  getAddress(): string {
-    return this.address;
-  }
-  getEmail(): string {
-    return this.email;
-  }
-  getPhone(): string {
-    return this.phone;
-  }
-  clear(): void {
-    this.payment = null;
-    this.address = '';
-    this.email = '';
-    this.phone = '';
-    this.events.emit('buyer:changed');
-  }
+
 
   validate(): TBuyerErrors {
     const errors: TBuyerErrors = {};

@@ -196,7 +196,6 @@ events.on('card:remove', (product: IProduct) => {
 // --- События форм ---
 // Начало оформления заказа
 events.on('order:start', () => {
-  buyer.clearBuyerData();  // Модель очищается и генерирует buyer:changed
   modal.content = orderForm.render();
 });
 // Модель изменилась — обновляем формы через сеттеры
@@ -210,25 +209,7 @@ events.on('buyer:changed', () => {
   contactsForm.email = buyerData.email;         // ''
   contactsForm.phone = buyerData.phone;
 });
-// Валидация формы заказа
-events.on("order:validate", () => {
-  const errors = buyer.validate();
-  const formElement = modalElement.querySelector('form[name="order"]');
-  if (formElement) {
-    const submitButton = formElement.querySelector(
-      'button[type="submit"]',
-    ) as HTMLButtonElement;
-    const errorsElement = formElement.querySelector(
-      ".form__errors",
-    ) as HTMLSpanElement;
 
-    const errorMessages = [errors.payment, errors.address]
-      .filter(Boolean)
-      .join("; ");
-    errorsElement.textContent = errorMessages;
-    submitButton.disabled = !!errors.payment || !!errors.address;
-  }
-});
 // Переход к форме контактов
 events.on('order:submit', () => {
   modal.content = contactsForm.render();
@@ -281,6 +262,8 @@ events.on('buyer:changed', () => {
   contactsForm.errors = contactsErrors.join('; ');
   contactsForm.valid = contactsErrors.length === 0;
 });
+
+
 
 // Отправка заказа
 events.on('contacts:submit', () => {

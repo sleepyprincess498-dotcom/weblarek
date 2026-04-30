@@ -8,10 +8,15 @@ export class Basket {
     this.listElement = this.element.querySelector('.basket__list') as HTMLUListElement;
     this.totalPriceElement = this.element.querySelector('.basket__price') as HTMLSpanElement;
     this.submitButton = this.element.querySelector('.basket__button') as HTMLButtonElement;
+    
+    this.submitButton.disabled = true;
+
     this.submitButton.addEventListener('click', onSubmit);
   }
   set items(value: HTMLElement[]) {
     this.listElement.replaceChildren(...value);
+
+    this.submitButton.disabled = value.length === 0;
   }
   set totalPrice(value: number) {
     this.totalPriceElement.textContent = `${value} синапсов`;
